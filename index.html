@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Malu To-do</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;800;900&family=Nunito:wght@400;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=mobile-responsive-2" />
+  </head>
+  <body>
+    <a class="skip-link" href="#taskTitle">Pular para adicionar tarefa</a>
+
+    <div class="ambient-art" aria-hidden="true">
+      <span class="ambient-sun"></span>
+      <img class="ambient-sunflower" src="assets/sunflower-header.png" alt="" />
+      <img class="ambient-runner" src="assets/runner-cutout.png" alt="" />
+      <span class="ambient-petal ambient-petal-one"></span>
+      <span class="ambient-petal ambient-petal-two"></span>
+    </div>
+
+    <main class="page">
+      <header class="app-header" aria-labelledby="appTitle">
+        <div class="brand-block">
+          <img
+            class="brand-sunflower"
+            src="assets/sunflower-header.png"
+            alt=""
+            aria-hidden="true"
+          />
+          <div>
+            <h1 id="appTitle">Malu</h1>
+            <p class="tagline">Coisinhas de hoje, com calma</p>
+          </div>
+        </div>
+        <time id="todayLabel" class="today-label" datetime=""></time>
+      </header>
+
+      <div
+        id="statusLine"
+        class="status-line"
+        role="status"
+        aria-live="polite"
+      ></div>
+
+      <section class="layout" aria-label="Malu To-do">
+        <div class="main-stack">
+          <section class="paper-panel add-panel" aria-labelledby="addTitle">
+            <div class="section-heading">
+              <h2 id="addTitle">O que precisa fazer?</h2>
+              <p>Anote sem fazer cerimônia</p>
+            </div>
+
+            <form id="quickAddForm" class="quick-add" autocomplete="off">
+              <div class="field title-field">
+                <label for="taskTitle">Tarefa</label>
+                <input
+                  id="taskTitle"
+                  name="title"
+                  type="text"
+                  maxlength="120"
+                  placeholder="Ex.: responder o Gabriel"
+                  required
+                />
+              </div>
+
+              <div class="field">
+                <label for="taskDueDate">Data</label>
+                <input id="taskDueDate" name="dueDate" type="date" />
+              </div>
+
+              <div class="field">
+                <label for="taskTime">Horário</label>
+                <input id="taskTime" name="time" type="time" />
+              </div>
+
+              <button class="button primary-button" type="submit">
+                Adicionar
+              </button>
+            </form>
+          </section>
+
+          <section class="paper-panel list-panel" aria-labelledby="listTitle">
+            <div class="section-heading list-heading">
+              <div>
+                <h2 id="listTitle">Papelzinho do dia</h2>
+                <p id="filterHint">Escolha um dia para ver o papelzinho.</p>
+              </div>
+              <button
+                id="clearDoneButton"
+                class="button quiet-button"
+                type="button"
+              >
+                Limpar feitas
+              </button>
+            </div>
+
+            <section class="day-strip-section" aria-labelledby="dayStripTitle">
+              <h3 id="dayStripTitle">Dias no papel</h3>
+              <div
+                id="dayStrip"
+                class="day-strip"
+                role="list"
+                aria-label="Escolher dia"
+              ></div>
+            </section>
+
+            <div class="filters" aria-label="Filtros">
+              <button
+                class="filter-button is-active"
+                type="button"
+                data-filter="all"
+              >
+                Todas
+              </button>
+              <button class="filter-button" type="button" data-filter="pending">
+                Pendentes
+              </button>
+              <button class="filter-button" type="button" data-filter="done">
+                Feitas
+              </button>
+            </div>
+
+            <ul id="taskList" class="task-list" aria-label="Tarefas"></ul>
+
+            <div id="emptyState" class="empty-state" hidden>
+              <span class="mini-sunflower" aria-hidden="true"></span>
+              <strong>Nada no papel por enquanto.</strong>
+              <p>Escreva uma coisinha ali em cima.</p>
+            </div>
+          </section>
+        </div>
+
+        <aside class="side-stack" aria-label="Resumo e musica">
+          <section class="paper-panel music-panel" aria-labelledby="musicTitle">
+            <div class="section-heading">
+              <h2 id="musicTitle">Vitrola</h2>
+            </div>
+
+            <img
+              class="player-art"
+              src="assets/record-player.png"
+              alt=""
+              aria-hidden="true"
+            />
+
+            <audio id="audioPlayer" controls preload="metadata">
+              Seu navegador não suporta áudio.
+            </audio>
+            <p id="nowPlaying" class="note-text">
+              A vitrolinha tenta começar sozinha. Se o navegador pedir, aperte
+              play uma vez.
+            </p>
+          </section>
+
+          <section
+            class="paper-panel summary-panel"
+            aria-labelledby="summaryTitle"
+          >
+            <h2 id="summaryTitle">Resumo</h2>
+            <dl class="summary-list">
+              <div>
+                <dt>Total</dt>
+                <dd id="totalCount">0</dd>
+              </div>
+              <div>
+                <dt>Pendentes</dt>
+                <dd id="pendingCount">0</dd>
+              </div>
+              <div>
+                <dt>Feitas</dt>
+                <dd id="doneCount">0</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="paper-panel note-panel" aria-labelledby="noteTitle">
+            <h2 id="noteTitle">Bilhete do dia</h2>
+            <p id="dailyNote">Sem pressa, mas com carinho.</p>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <dialog id="editDialog" class="edit-dialog" aria-labelledby="dialogTitle">
+      <form id="editForm" method="dialog">
+        <div class="dialog-header">
+          <h2 id="dialogTitle">Editar tarefa</h2>
+          <button
+            id="closeDialogButton"
+            class="button square-button"
+            type="button"
+            aria-label="Fechar edicao"
+          >
+            x
+          </button>
+        </div>
+
+        <div class="field">
+          <label for="editTitle">Tarefa</label>
+          <input
+            id="editTitle"
+            name="title"
+            type="text"
+            maxlength="120"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="editDueDate">Data</label>
+          <input id="editDueDate" name="dueDate" type="date" />
+        </div>
+
+        <div class="field">
+          <label for="editTime">Horário</label>
+          <input id="editTime" name="time" type="time" />
+        </div>
+
+        <div class="field">
+          <label for="editCategory">Etiqueta</label>
+          <input
+            id="editCategory"
+            name="category"
+            type="text"
+            maxlength="32"
+            placeholder="casa, estudo, cuidado..."
+          />
+        </div>
+
+        <div class="field">
+          <label for="editNotes">Notas</label>
+          <textarea
+            id="editNotes"
+            name="notes"
+            rows="4"
+            maxlength="420"
+            placeholder="Detalhes opcionais"
+          ></textarea>
+        </div>
+
+        <div class="dialog-actions">
+          <button
+            id="cancelEditButton"
+            class="button quiet-button"
+            type="button"
+          >
+            Cancelar
+          </button>
+          <button class="button primary-button" type="submit">Salvar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div id="petalLayer" class="petal-layer" aria-hidden="true"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
