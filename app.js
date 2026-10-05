@@ -99,10 +99,10 @@ const focusableSelector = [
 ].join(",");
 
 const notes = [
-  "Sem pressa, mas com carinho.",
-  "Uma coisa pequena tambem conta.",
-  "Feito e melhor que perfeito.",
-  "Vai no seu ritmo.",
+  "Sem pressa mas com carinho",
+  "Uma coisa pequena também conta",
+  "Feito é melhor que perfeito",
+  "Vai no teu ritmo",
 ];
 
 function normalizeSavedFilter(filter) {
@@ -783,10 +783,7 @@ function shuffledTrackIndexes(avoidFirstIndex = -1) {
   return indexes;
 }
 
-function playNextQueuedTrack({
-  autoplay = true,
-  announceChange = false,
-} = {}) {
+function playNextQueuedTrack({ autoplay = true, announceChange = false } = {}) {
   if (!state.trackQueue.length) {
     state.trackQueue = shuffledTrackIndexes(state.currentTrackIndex);
   }
