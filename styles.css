@@ -632,11 +632,6 @@ textarea {
   background: #fff8cf;
 }
 
-.task-item.is-climbing {
-  border-left-color: #d7a84a;
-  background: #fff9d9;
-}
-
 .task-item.did-pop {
   animation: task-pop 520ms ease-out;
 }

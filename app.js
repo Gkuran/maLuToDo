@@ -21,10 +21,7 @@ const TASKS_KEY = "malu.todo.tasks.v3";
 const FILTER_KEY = "malu.todo.filter.v3";
 const SELECTED_DATE_KEY = "malu.todo.selectedDate.v1";
 const AUDIO_KEY = "malu.todo.audio.v3";
-const DELETED_DEFAULT_TASKS_KEY = "malu.todo.deletedDefaultTasks.v1";
-const CLIMBING_TITLE = "Escalar com o Gabriel";
 const CLIMBING_KIND = "climbing";
-const CLIMBING_ICON_SRC = "assets/climbing-gabriel.png";
 
 const memoryStore = new Map();
 
@@ -214,19 +211,6 @@ function saveTasks() {
   store.set(TASKS_KEY, JSON.stringify(state.tasks));
 }
 
-function readDeletedDefaultTasks() {
-  try {
-    const parsed = JSON.parse(store.get(DELETED_DEFAULT_TASKS_KEY, "[]"));
-    return new Set(Array.isArray(parsed) ? parsed : []);
-  } catch {
-    return new Set();
-  }
-}
-
-function saveDeletedDefaultTasks(deletedKeys) {
-  store.set(DELETED_DEFAULT_TASKS_KEY, JSON.stringify([...deletedKeys]));
-}
-
 function createId() {
   if (globalThis.crypto?.randomUUID) {
     return globalThis.crypto.randomUUID();
@@ -258,65 +242,21 @@ function normalizeTime(value) {
   return /^\d{2}:\d{2}$/.test(time) ? time : "";
 }
 
-function ensureDefaultTasks() {
-  const deletedDefaultTasks = readDeletedDefaultTasks();
-  let changed = false;
-
-  weekWindowDates().forEach((dateString) => {
-    const defaultTask = defaultTaskForDate(dateString);
-    if (!defaultTask) {
-      return;
-    }
-
-    const alreadyExists = state.tasks.some(
-      (task) => task.recurrenceKey === defaultTask.recurrenceKey,
+function removeDefaultClimbingTasks() {
+  const initialCount = state.tasks.length;
+  state.tasks = state.tasks.filter((task) => {
+    const recurrenceKey = String(task.recurrenceKey || "");
+    const id = String(task.id || "");
+    return !(
+      task.kind === CLIMBING_KIND ||
+      recurrenceKey.startsWith(`${CLIMBING_KIND}-`) ||
+      id.startsWith(`${CLIMBING_KIND}-`)
     );
-    if (!alreadyExists && !deletedDefaultTasks.has(defaultTask.recurrenceKey)) {
-      state.tasks.push(defaultTask);
-      changed = true;
-    }
   });
 
-  if (changed) {
+  if (state.tasks.length !== initialCount) {
     saveTasks();
   }
-}
-
-function defaultTaskForDate(dateString) {
-  const day = weekdayIndex(dateString);
-  if (day === 3) {
-    return createDefaultClimbingTask(dateString, "19:30");
-  }
-
-  if (day === 6) {
-    return createDefaultClimbingTask(dateString, "09:00");
-  }
-
-  return null;
-}
-
-function createDefaultClimbingTask(dateString, time) {
-  const createdAt = new Date(`${dateString}T00:00:00`).toISOString();
-  return {
-    id: `climbing-${dateString}`,
-    title: CLIMBING_TITLE,
-    dueDate: dateString,
-    time,
-    priority: "normal",
-    category: "escalada",
-    kind: CLIMBING_KIND,
-    recurrenceKey: `${CLIMBING_KIND}-${dateString}`,
-    notes: "",
-    completed: false,
-    createdAt,
-    completedAt: null,
-    updatedAt: createdAt,
-  };
-}
-
-function weekdayIndex(dateString) {
-  const [year, month, day] = dateString.split("-").map(Number);
-  return new Date(year, month - 1, day).getDay();
 }
 
 function isOverdue(task) {
@@ -506,7 +446,6 @@ function createTaskElement(task) {
   item.dataset.id = task.id;
   item.classList.toggle("is-done", task.completed);
   item.classList.toggle("is-overdue", isOverdue(task));
-  item.classList.toggle("is-climbing", task.kind === CLIMBING_KIND);
 
   const checkbox = document.createElement("button");
   checkbox.className = "complete-button";
@@ -526,15 +465,6 @@ function createTaskElement(task) {
 
   const titleRow = document.createElement("div");
   titleRow.className = "task-title-row";
-
-  if (task.kind === CLIMBING_KIND) {
-    const icon = document.createElement("img");
-    icon.className = "task-icon";
-    icon.src = CLIMBING_ICON_SRC;
-    icon.alt = "";
-    icon.loading = "lazy";
-    titleRow.append(icon);
-  }
 
   const title = document.createElement("p");
   title.className = "task-title";
@@ -676,11 +606,6 @@ function deleteTask(id) {
   }
 
   state.tasks = state.tasks.filter((entry) => entry.id !== id);
-  if (task.recurrenceKey) {
-    const deletedDefaultTasks = readDeletedDefaultTasks();
-    deletedDefaultTasks.add(task.recurrenceKey);
-    saveDeletedDefaultTasks(deletedDefaultTasks);
-  }
   saveTasks();
   announce("Tarefa apagada.");
   render();
@@ -699,11 +624,6 @@ function clearDone() {
     return;
   }
 
-  const deletedDefaultTasks = readDeletedDefaultTasks();
-  state.tasks
-    .filter((task) => task.completed && task.recurrenceKey)
-    .forEach((task) => deletedDefaultTasks.add(task.recurrenceKey));
-  saveDeletedDefaultTasks(deletedDefaultTasks);
   state.tasks = state.tasks.filter((task) => !task.completed);
   saveTasks();
   announce("Feitas limpas do papel.");
@@ -998,6 +918,6 @@ elements.editDialog.addEventListener("keydown", trapDialogFocus);
 
 setupDateAndNote();
 loadTasks();
-ensureDefaultTasks();
+removeDefaultClimbingTasks();
 setupAudio();
 render();
